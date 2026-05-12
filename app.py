@@ -278,6 +278,7 @@ def pacienti():
     search = request.args.get("search")
     show_add = request.args.get("show_add")
     edit_id = request.args.get("edit_id")
+    istoric_id = request.args.get("istoric_id")
 
     if search:
         value = f"%{search}%"
@@ -294,13 +295,35 @@ def pacienti():
 
     pacienti = cursor.fetchall()
 
+    istoric_data = []
+
+    if istoric_id:
+        cursor.execute("""
+            SELECT 
+                DATE_FORMAT(pr.data_programare, '%d.%m.%Y') AS data,
+                TIME_FORMAT(pr.ora, '%H:%i') AS ora,
+                CONCAT('Dr. ', m.nume, ' ', m.prenume) AS medic,
+                m.specializare,
+                UPPER(pr.status) AS status,
+                COALESCE(c.diagnostic, 'În așteptare') AS diagnostic,
+                COALESCE(c.observatii, 'Fără observații') AS observatii
+            FROM pacienti p
+            JOIN programari pr ON p.id_pacient = pr.id_pacient
+            JOIN medici m ON pr.id_medic = m.id_medic
+            LEFT JOIN consultatii c ON pr.id_programare = c.id_programare
+            WHERE p.id_pacient = %s
+            ORDER BY pr.data_programare DESC, pr.ora DESC
+        """, (istoric_id,))
+        istoric_data = cursor.fetchall()
+
     return render_template(
         "pacienti.html",
         pacienti=pacienti,
         show_add=True if show_add else False,
-        edit_id=int(edit_id) if edit_id else None
+        edit_id=int(edit_id) if edit_id else None,
+        istoric_id=int(istoric_id) if istoric_id else None,
+        istoric_data=istoric_data
     )
-
 
 @app.route("/adauga", methods=["POST"])
 def adauga():

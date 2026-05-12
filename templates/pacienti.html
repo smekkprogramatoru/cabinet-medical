@@ -144,7 +144,53 @@
             <tbody>
 {% for p in pacienti %}
 <tr>
+{% if istoric_id == p[0] %}
+<tr>
+    <td colspan="8">
+        <div class="card border-0 shadow-sm my-3">
+            <div class="card-header fw-bold">
+                Istoric medical - {{ p[1] }} {{ p[2] }}
+            </div>
 
+            <div class="card-body">
+                {% if istoric_data %}
+                    <table class="table table-sm table-bordered align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Data</th>
+                                <th>Ora</th>
+                                <th>Medic</th>
+                                <th>Specializare</th>
+                                <th>Status</th>
+                                <th>Diagnostic</th>
+                                <th>Observații</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for h in istoric_data %}
+                            <tr>
+                                <td>{{ h[0] }}</td>
+                                <td>{{ h[1] }}</td>
+                                <td>{{ h[2] }}</td>
+                                <td>{{ h[3] }}</td>
+                                <td>{{ h[4] }}</td>
+                                <td>{{ h[5] }}</td>
+                                <td>{{ h[6] }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p class="text-muted mb-0">
+                        Acest pacient nu are încă istoric medical.
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+    </td>
+</tr>
+{% endif %}
 {% if edit_id == p[0] %}
 
 <form method="post" action="/actualizeaza_pacient/{{ p[0] }}">
@@ -199,9 +245,9 @@
     <td>{{ p[6] }}</td>
 
     <td class="text-end">
-        <a href="/istoric/{{ p[0] }}" class="btn btn-success btn-sm">
-            Istoric
-        </a>
+        <a href="/pacienti?istoric_id={{ p[0] }}" class="btn btn-outline-success btn-sm">
+    Istoric
+</a>
 
         <a href="/pacienti?edit_id={{ p[0] }}{% if request.args.get('search') %}&search={{ request.args.get('search') }}{% endif %}"
    class="btn btn-warning btn-sm">
@@ -218,6 +264,7 @@
 {% endif %}
 
 </tr>
+
 {% endfor %}
 </tbody>
         </table>
