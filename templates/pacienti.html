@@ -30,15 +30,20 @@
 .table td:last-child {
     width: 170px;
 }
+
+.istoric-box {
+    background-color: #f8fafc;
+    border-radius: 12px;
+}
 </style>
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-    <h1 class="mb-1">Lista pacienți</h1>
-    <p class="text-muted mb-0">
-        Gestionarea pacienților înregistrați în sistemul medical
-    </p>
-</div>
+        <h1 class="mb-1">Lista pacienți</h1>
+        <p class="text-muted mb-0">
+            Gestionarea pacienților înregistrați în sistemul medical
+        </p>
+    </div>
 
     <div>
         <a href="/pacienti?show_add=1" class="btn btn-primary">+ Adaugă pacient</a>
@@ -64,7 +69,7 @@
             </div>
 
             <div class="col-auto">
-               <a href="/pacienti" class="btn btn-secondary table-edit-btn">
+                <a href="/pacienti" class="btn btn-secondary table-edit-btn">
                     Resetare
                 </a>
             </div>
@@ -73,8 +78,6 @@
 
     </div>
 </div>
-
-<!-- FORMULARUL DE ADAUGA DEASUPRA TABELULUI @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ -->
 
 {% if show_add %}
 <div class="card shadow-sm mb-4">
@@ -142,131 +145,147 @@
             </thead>
 
             <tbody>
-{% for p in pacienti %}
-<tr>
-{% if istoric_id == p[0] %}
-<tr>
-    <td colspan="8">
-        <div class="card border-0 shadow-sm my-3">
-            <div class="card-header fw-bold">
-                Istoric medical - {{ p[1] }} {{ p[2] }}
-            </div>
+            {% for p in pacienti %}
+            <tr>
+                {% if edit_id == p[0] %}
 
-            <div class="card-body">
-                {% if istoric_data %}
-                    <table class="table table-sm table-bordered align-middle">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Data</th>
-                                <th>Ora</th>
-                                <th>Medic</th>
-                                <th>Specializare</th>
-                                <th>Status</th>
-                                <th>Diagnostic</th>
-                                <th>Observații</th>
-                            </tr>
-                        </thead>
+                <form method="post" action="/actualizeaza_pacient/{{ p[0] }}">
 
-                        <tbody>
-                            {% for h in istoric_data %}
-                            <tr>
-                                <td>{{ h[0] }}</td>
-                                <td>{{ h[1] }}</td>
-                                <td>{{ h[2] }}</td>
-                                <td>{{ h[3] }}</td>
-                                <td>{{ h[4] }}</td>
-                                <td>{{ h[5] }}</td>
-                                <td>{{ h[6] }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                    <td>{{ p[0] }}</td>
+
+                    <td>
+                        <input type="text" name="nume" class="form-control form-control-sm table-edit-input" value="{{ p[1] }}">
+                    </td>
+
+                    <td>
+                        <input type="text" name="prenume" class="form-control form-control-sm table-edit-input" value="{{ p[2] }}">
+                    </td>
+
+                    <td>
+                        <input type="text" name="cnp" class="form-control form-control-sm table-edit-input" value="{{ p[3] }}">
+                    </td>
+
+                    <td>
+                        <input type="date" name="data_nasterii" class="form-control form-control-sm table-edit-input" value="{{ p[4] }}">
+                    </td>
+
+                    <td>
+                        <input type="text" name="telefon" class="form-control form-control-sm table-edit-input" value="{{ p[5] }}">
+                    </td>
+
+                    <td>
+                        <input type="email" name="email" class="form-control form-control-sm table-edit-input" value="{{ p[6] }}">
+                    </td>
+
+                    <td class="text-end">
+                        <button type="submit" class="btn btn-success btn-sm table-edit-btn">
+                            Salvează
+                        </button>
+
+                        <a href="/pacienti{% if request.args.get('search') %}?search={{ request.args.get('search') }}{% endif %}"
+                           class="btn btn-secondary btn-sm table-edit-btn">
+                            Anulează
+                        </a>
+                    </td>
+
+                </form>
+
                 {% else %}
-                    <p class="text-muted mb-0">
-                        Acest pacient nu are încă istoric medical.
-                    </p>
+
+                    <td>{{ p[0] }}</td>
+                    <td>{{ p[1] }}</td>
+                    <td>{{ p[2] }}</td>
+                    <td>{{ p[3] }}</td>
+                    <td>{{ p[4] }}</td>
+                    <td>{{ p[5] }}</td>
+                    <td>{{ p[6] }}</td>
+
+                    <td class="text-end">
+                        <a href="/pacienti?istoric_id={{ p[0] }}{% if request.args.get('search') %}&search={{ request.args.get('search') }}{% endif %}"
+                           class="btn btn-outline-success btn-sm">
+                            Istoric
+                        </a>
+
+                        <a href="/pacienti?edit_id={{ p[0] }}{% if request.args.get('search') %}&search={{ request.args.get('search') }}{% endif %}"
+                           class="btn btn-warning btn-sm">
+                            Modifică
+                        </a>
+
+                        <a href="/sterge/{{ p[0] }}"
+                           class="btn btn-danger btn-sm"
+                           onclick="return confirm('Sigur ștergi acest pacient?')">
+                            Șterge
+                        </a>
+                    </td>
+
                 {% endif %}
-            </div>
-        </div>
-    </td>
-</tr>
-{% endif %}
-{% if edit_id == p[0] %}
+            </tr>
 
-<form method="post" action="/actualizeaza_pacient/{{ p[0] }}">
+            {% if istoric_id == p[0] %}
+            <tr>
+                <td colspan="8">
+                    <div class="istoric-box p-3 my-2">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0">
+                                Istoric medical - {{ p[1] }} {{ p[2] }}
+                            </h5>
 
-    <td>{{ p[0] }}</td>
+                            <a href="/pacienti{% if request.args.get('search') %}?search={{ request.args.get('search') }}{% endif %}"
+                               class="btn btn-secondary btn-sm">
+                                Închide istoric
+                            </a>
+                        </div>
 
-    <td>
-        <input type="text" name="nume" class="form-control form-control-sm table-edit-input" value="{{ p[1] }}">
-    </td>
+                        {% if istoric_data %}
+                            <table class="table table-sm table-bordered align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Data</th>
+                                        <th>Ora</th>
+                                        <th>Medic</th>
+                                        <th>Specializare</th>
+                                        <th>Status</th>
+                                        <th>Diagnostic</th>
+                                        <th>Observații</th>
+                                    </tr>
+                                </thead>
 
-    <td>
-        <input type="text" name="prenume" class="form-control form-control-sm table-edit-input" value="{{ p[2] }}">
-    </td>
+                                <tbody>
+                                    {% for h in istoric_data %}
+                                    <tr>
+                                        <td>{{ h[0] }}</td>
+                                        <td>{{ h[1] }}</td>
+                                        <td>{{ h[2] }}</td>
+                                        <td>{{ h[3] }}</td>
+                                        <td>
+                                            {% if h[4] == 'PROGRAMATA' %}
+                                                <span class="badge bg-warning text-dark">PROGRAMATĂ</span>
+                                            {% elif h[4] == 'FINALIZATA' %}
+                                                <span class="badge bg-success">FINALIZATĂ</span>
+                                            {% elif h[4] == 'ANULATA' %}
+                                                <span class="badge bg-danger">ANULATĂ</span>
+                                            {% else %}
+                                                {{ h[4] }}
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ h[5] }}</td>
+                                        <td style="white-space: normal;">{{ h[6] }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <p class="text-muted mb-0">
+                                Acest pacient nu are încă istoric medical.
+                            </p>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% endif %}
 
-    <td>
-        <input type="text" name="cnp" class="form-control form-control-sm table-edit-input" value="{{ p[3] }}">
-    </td>
-
-    <td>
-        <input type="date" name="data_nasterii" class="form-control form-control-sm table-edit-input" value="{{ p[4] }}">
-    </td>
-
-    <td>
-        <input type="text" name="telefon" class="form-control form-control-sm table-edit-input" value="{{ p[5] }}">
-    </td>
-
-    <td>
-        <input type="email" name="email" class="form-control form-control-sm table-edit-input" value="{{ p[6] }}">
-    </td>
-
-    <td class="text-end">
-        <button type="submit" class="btn btn-success btn-sm">
-            Salvează
-        </button>
-
-        <a href="/pacienti{% if request.args.get('search') %}?search={{ request.args.get('search') }}{% endif %}"
-   class="btn btn-secondary btn-sm table-edit-btn">
-    Anulează
-</a>
-    </td>
-
-</form>
-
-{% else %}
-
-    <td>{{ p[0] }}</td>
-    <td>{{ p[1] }}</td>
-    <td>{{ p[2] }}</td>
-    <td>{{ p[3] }}</td>
-    <td>{{ p[4] }}</td>
-    <td>{{ p[5] }}</td>
-    <td>{{ p[6] }}</td>
-
-    <td class="text-end">
-        <a href="/pacienti?istoric_id={{ p[0] }}" class="btn btn-outline-success btn-sm">
-    Istoric
-</a>
-
-        <a href="/pacienti?edit_id={{ p[0] }}{% if request.args.get('search') %}&search={{ request.args.get('search') }}{% endif %}"
-   class="btn btn-warning btn-sm">
-    Modifică
-</a>
-
-        <a href="/sterge/{{ p[0] }}"
-           class="btn btn-danger btn-sm"
-           onclick="return confirm('Sigur ștergi acest pacient?')">
-            Șterge
-        </a>
-    </td>
-
-{% endif %}
-
-</tr>
-
-{% endfor %}
-</tbody>
+            {% endfor %}
+            </tbody>
         </table>
     </div>
 </div>
