@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <h1 class="card-title">Sistem de gestionare cabinet medical</h1>
+        <p class="text-muted">Dashboard principal al aplicației.</p>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <h2 class="text-primary">{{ total_pacienti }}</h2>
+                <p>Pacienți</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <h2 class="text-primary">{{ total_medici }}</h2>
+                <p>Medici</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <h2 class="text-primary">{{ total_programari }}</h2>
+                <p>Programări</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <h2 class="text-warning">{{ programari_active }}</h2>
+                <p>Active</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <h2 class="text-success">{{ total_consultatii }}</h2>
+                <p>Consultații</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <h2 class="text-info">{{ total_retete }}</h2>
+                <p>Rețete</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+
+    <div class="col-md-4">
+        <a href="/pacienti" class="text-decoration-none">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h4>Pacienți</h4>
+                    <p class="text-muted">Gestionare pacienți și istoric medical.</p>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-md-4">
+        <a href="/programari" class="text-decoration-none">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h4>Programări</h4>
+                    <p class="text-muted">Adaugă, modifică și șterge programări.</p>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-md-4">
+        <a href="/medici" class="text-decoration-none">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h4>Medici</h4>
+                    <p class="text-muted">Gestionare medici și specializări.</p>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-md-4">
+        <a href="/consultatii" class="text-decoration-none">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h4>Consultații</h4>
+                    <p class="text-muted">Diagnostic și observații medicale.</p>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-md-4">
+        <a href="/retete" class="text-decoration-none">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h4>Rețete medicale</h4>
+                    <p class="text-muted">Gestionare rețete și medicamente.</p>
+                </div>
+            </div>
+        </a>
+    </div>
+
+</div>
+
+{% endblock %}

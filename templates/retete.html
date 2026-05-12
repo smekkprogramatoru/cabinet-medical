@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+.table td, .table th {
+    vertical-align: middle;
+    font-size: 14px;
+    padding: 10px 12px;
+}
+
+.reteta-text {
+    max-width: 420px;
+    white-space: normal;
+}
+
+.table-edit-input {
+    font-size: 13px;
+    padding: 5px 7px;
+}
+
+.table-edit-btn {
+    padding: 4px 8px;
+    font-size: 12px;
+}
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Lista rețete medicale</h1>
+
+    <div>
+        <a href="/" class="btn btn-secondary">Meniu principal</a>
+        <a href="/retete?show_add=1" class="btn btn-primary">+ Adaugă rețetă</a>
+    </div>
+</div>
+
+{% if show_add %}
+<div class="card shadow-sm mb-4">
+    <div class="card-header fw-bold">
+        Adaugă rețetă nouă
+    </div>
+
+    <div class="card-body">
+        <form method="post" action="/adauga_reteta" class="row g-3">
+
+            <div class="col-md-5">
+                <label class="form-label">Consultație</label>
+                <select name="id_consultatie" class="form-select" required>
+                    {% for c in consultatii %}
+                        <option value="{{ c[0] }}"
+                            {% if id_consultatie_selectata and id_consultatie_selectata|int == c[0] %}selected{% endif %}>
+                            {{ c[1] }} {{ c[2] }} - {{ c[3] }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Data emiterii</label>
+                <input type="date" name="data_emitere" class="form-control" required>
+            </div>
+
+            <div class="col-12">
+                <label class="form-label">Medicamente</label>
+                <textarea name="medicamente" class="form-control" rows="3" required></textarea>
+            </div>
+
+            <div class="col-12">
+                <button type="submit" class="btn btn-success">Salvează</button>
+                <a href="/retete" class="btn btn-secondary">Anulează</a>
+            </div>
+
+        </form>
+    </div>
+</div>
+{% endif %}
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <table class="table table-striped table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>ID</th>
+                    <th>Pacient</th>
+                    <th>Medic</th>
+                    <th>Diagnostic</th>
+                    <th>Medicamente</th>
+                    <th>Data emiterii</th>
+                    <th class="text-end">Acțiuni</th>
+                </tr>
+            </thead>
+
+            <tbody>
+            {% for r in retete %}
+            <tr>
+
+                {% if edit_id == r[0] %}
+
+                <form method="post" action="/actualizeaza_reteta/{{ r[0] }}">
+
+                    <td>{{ r[0] }}</td>
+                    <td>{{ r[1] }} {{ r[2] }}</td>
+                    <td>{{ r[3] }} {{ r[4] }}</td>
+                    <td>{{ r[5] }}</td>
+
+                    <td>
+                        <textarea name="medicamente"
+                                  class="form-control form-control-sm table-edit-input"
+                                  rows="2">{{ r[6] }}</textarea>
+                    </td>
+
+                    <td>
+                        <input type="date"
+                               name="data_emitere"
+                               class="form-control form-control-sm table-edit-input"
+                               value="{{ r[7] }}">
+                    </td>
+
+                    <td class="text-end">
+                        <button type="submit" class="btn btn-success btn-sm table-edit-btn">
+                            Salvează
+                        </button>
+
+                        <a href="/retete" class="btn btn-secondary btn-sm table-edit-btn">
+                            Anulează
+                        </a>
+                    </td>
+
+                </form>
+
+                {% else %}
+
+                    <td>{{ r[0] }}</td>
+                    <td>{{ r[1] }} {{ r[2] }}</td>
+                    <td>{{ r[3] }} {{ r[4] }}</td>
+                    <td>{{ r[5] }}</td>
+                    <td class="reteta-text">{{ r[6] }}</td>
+                    <td>{{ r[7] }}</td>
+
+                    <td class="text-end">
+                        <a href="/retete?edit_id={{ r[0] }}" class="btn btn-warning btn-sm">
+                            Modifică
+                        </a>
+
+                        <a href="/sterge_reteta/{{ r[0] }}"
+                           class="btn btn-danger btn-sm"
+                           onclick="return confirm('Sigur ștergi această rețetă?')">
+                            Șterge
+                        </a>
+                    </td>
+
+                {% endif %}
+
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

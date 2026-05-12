@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Lista programări</h1>
+
+    <div>
+        <a href="/" class="btn btn-secondary">Meniu principal</a>
+        <a href="/programari?show_add=1" class="btn btn-primary">+ Adaugă programare</a>
+    </div>
+</div>
+
+{% if show_add %}
+<div class="card shadow-sm mb-4">
+    <div class="card-header fw-bold">
+        Adaugă programare nouă
+    </div>
+
+    <div class="card-body">
+        <form method="post" action="/adauga_programare" class="row g-3">
+
+            <div class="col-md-3">
+                <label class="form-label">Pacient</label>
+                <select name="id_pacient" class="form-select" required>
+                    {% for p in pacienti %}
+                        <option value="{{ p[0] }}">{{ p[1] }} {{ p[2] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Medic</label>
+                <select name="id_medic" class="form-select" required>
+                    {% for m in medici %}
+                        <option value="{{ m[0] }}">{{ m[1] }} {{ m[2] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <label class="form-label">Data</label>
+                <input type="date" name="data_programare" class="form-control" required>
+            </div>
+
+            <div class="col-md-2">
+                <label class="form-label">Ora</label>
+                <input type="time" name="ora" class="form-control" required>
+            </div>
+
+            <div class="col-md-2">
+                <label class="form-label">Status</label>
+                <select name="status" class="form-select">
+                    <option value="programata">Programată</option>
+                    <option value="finalizata">Finalizată</option>
+                    <option value="anulata">Anulată</option>
+                </select>
+            </div>
+
+            <div class="col-12">
+                <button type="submit" class="btn btn-success">Salvează</button>
+                <a href="/programari" class="btn btn-secondary">Anulează</a>
+            </div>
+
+        </form>
+    </div>
+</div>
+{% endif %}
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <table class="table table-striped table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>ID</th>
+                    <th>Pacient</th>
+                    <th>Medic</th>
+                    <th>Data</th>
+                    <th>Ora</th>
+                    <th>Status</th>
+                    <th>Consultație</th>
+                    <th class="text-end">Acțiuni</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for pr in programari %}
+                <tr>
+
+                    {% if edit_id == pr[0] %}
+
+                    <form method="post" action="/actualizeaza_programare/{{ pr[0] }}">
+
+                        <td>{{ pr[0] }}</td>
+                        <td>{{ pr[1] }} {{ pr[2] }}</td>
+                        <td>{{ pr[3] }} {{ pr[4] }}</td>
+
+                        <td>
+                            <input type="date"
+                                   name="data_programare"
+                                   class="form-control form-control-sm"
+                                   value="{{ pr[5] }}">
+                        </td>
+
+                        <td>
+                            <input type="time"
+                                   name="ora"
+                                   class="form-control form-control-sm"
+                                   value="{{ pr[6] }}">
+                        </td>
+
+                        <td>
+                            <select name="status" class="form-select form-select-sm">
+                                <option value="programata" {% if pr[7] == 'programata' %}selected{% endif %}>Programată</option>
+                                <option value="finalizata" {% if pr[7] == 'finalizata' %}selected{% endif %}>Finalizată</option>
+                                <option value="anulata" {% if pr[7] == 'anulata' %}selected{% endif %}>Anulată</option>
+                            </select>
+                        </td>
+
+                        <td>
+                            {% if pr[7] == 'finalizata' and pr[8] %}
+                                <a href="/consultatii?consultatie_id={{ pr[8] }}" class="btn btn-info btn-sm">
+                                    Consultație
+                                </a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+
+                        <td class="text-end">
+                            <button type="submit" class="btn btn-success btn-sm">
+                                Salvează
+                            </button>
+
+                            <a href="/programari" class="btn btn-secondary btn-sm">
+                                Anulează
+                            </a>
+                        </td>
+
+                    </form>
+
+                    {% else %}
+
+                        <td>{{ pr[0] }}</td>
+                        <td>{{ pr[1] }} {{ pr[2] }}</td>
+                        <td>{{ pr[3] }} {{ pr[4] }}</td>
+                        <td>{{ pr[5] }}</td>
+                        <td>{{ pr[6] }}</td>
+
+                        <td>
+                            {% if pr[7] == 'programata' %}
+                                <span class="badge bg-warning text-dark">Programată</span>
+                            {% elif pr[7] == 'finalizata' %}
+                                <span class="badge bg-success">Finalizată</span>
+                            {% elif pr[7] == 'anulata' %}
+                                <span class="badge bg-danger">Anulată</span>
+                            {% else %}
+                                {{ pr[7] }}
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if pr[7] == 'finalizata' and pr[8] %}
+                                <a href="/consultatii?consultatie_id={{ pr[8] }}" class="btn btn-info btn-sm">
+                                    Consultație
+                                </a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+
+                        <td class="text-end">
+                            <a href="/programari?edit_id={{ pr[0] }}" class="btn btn-warning btn-sm">
+                                Modifică
+                            </a>
+
+                            <a href="/sterge_programare/{{ pr[0] }}"
+                               class="btn btn-danger btn-sm"
+                               onclick="return confirm('Sigur ștergi această programare?')">
+                                Șterge
+                            </a>
+                        </td>
+
+                    {% endif %}
+
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1 class="mb-4">Dashboard pacient</h1>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <h4>{{ pacient[0] }} {{ pacient[1] }}</h4>
+
+        <p class="mb-1">
+            <strong>Telefon:</strong> {{ pacient[2] }}
+        </p>
+
+        <p>
+            <strong>Email:</strong> {{ pacient[3] }}
+        </p>
+    </div>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header fw-bold">
+        Programările mele
+    </div>
+
+    <div class="card-body">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Medic</th>
+                    <th>Data</th>
+                    <th>Ora</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for p in programari %}
+                <tr>
+                    <td>{{ p[0] }}</td>
+                    <td>Dr. {{ p[1] }} {{ p[2] }}</td>
+                    <td>{{ p[3] }}</td>
+                    <td>{{ p[4] }}</td>
+
+                    <td>
+                        {% if p[5] == 'programata' %}
+                            <span class="badge bg-warning text-dark">
+                                Programată
+                            </span>
+
+                        {% elif p[5] == 'finalizata' %}
+                            <span class="badge bg-success">
+                                Finalizată
+                            </span>
+
+                        {% elif p[5] == 'anulata' %}
+                            <span class="badge bg-danger">
+                                Anulată
+                            </span>
+                        {% endif %}
+                    </td>
+
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header fw-bold">
+        Consultațiile mele
+    </div>
+
+    <div class="card-body">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Medic</th>
+                    <th>Data</th>
+                    <th>Diagnostic</th>
+                    <th>Observații</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for c in consultatii %}
+                <tr>
+                    <td>{{ c[0] }}</td>
+                    <td>Dr. {{ c[1] }} {{ c[2] }}</td>
+                    <td>{{ c[3] }}</td>
+                    <td>{{ c[4] }}</td>
+                    <td>{{ c[5] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header fw-bold">
+        Rețetele mele
+    </div>
+
+    <div class="card-body">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Medic</th>
+                    <th>Diagnostic</th>
+                    <th>Medicamente</th>
+                    <th>Data emiterii</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for r in retete %}
+                <tr>
+                    <td>{{ r[0] }}</td>
+                    <td>Dr. {{ r[1] }} {{ r[2] }}</td>
+                    <td>{{ r[3] }}</td>
+                    <td>{{ r[4] }}</td>
+                    <td>{{ r[5] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

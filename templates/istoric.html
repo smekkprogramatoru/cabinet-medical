@@ -1,0 +1,39 @@
+<html>
+<head>
+    <title>Istoric Medical</title>
+    <style>
+       table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #f8f9fa; }
+        .btn { padding: 5px 10px; text-decoration: none; border-radius: 4px; display: inline-block; }
+        .btn-add { background-color: #28a745; color: white; }
+        .btn-edit { background-color: #ffc107; color: black; }
+    </style>
+</head>
+<body>
+    <h1>Istoric Medical - {{ data[0][2] if data else 'Pacient' }}</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Ora</th>
+                <th>Medic</th>
+                <th>Specializare</th>
+                <th>Status</th>
+                <th>Diagnostic</th>
+                <th>Observatii</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in data %}
+            <tr>
+                <td>{{ row[0] }}</td> <td>{{ row[1] }}</td> <td>{{ row[3] }}</td> <td>{{ row[4] }}</td> <td class="status-prog">{{ row[5] }}</td> <td>{{ row[6] }}</td> <td>{{ row[7] }}</td> </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <br>
+    <a href="/pacienti">Inapoi la lista pacienti</a>
+</body>
+</html>

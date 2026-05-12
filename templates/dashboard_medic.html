@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Dashboard medic</h1>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <h4>Dr. {{ medic[0] }} {{ medic[1] }}</h4>
+        <p class="text-muted">{{ medic[2] }}</p>
+    </div>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header fw-bold">
+        Orar de lucru
+    </div>
+
+    <div class="card-body">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Zi</th>
+                    <th>Program</th>
+                    <th>Pauză de masă</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for o in orar %}
+                <tr>
+                    <td>{{ o[0] }}</td>
+                    <td>{{ o[1] }} - {{ o[2] }}</td>
+                    <td>{{ o[3] }} - {{ o[4] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header fw-bold">
+        Programările mele
+    </div>
+
+    <div class="card-body">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Pacient</th>
+                    <th>Data</th>
+                    <th>Ora</th>
+                    <th>Status</th>
+                    <th>Acțiuni</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for p in programari %}
+                <tr>
+    <td>{{ p[0] }}</td>
+    <td>{{ p[1] }} {{ p[2] }}</td>
+    <td>{{ p[3] }}</td>
+    <td>{{ p[4] }}</td>
+
+    <td>
+        {% if p[5] == 'programata' %}
+            <span class="badge bg-warning text-dark">Programată</span>
+        {% elif p[5] == 'finalizata' %}
+            <span class="badge bg-success">Finalizată</span>
+        {% elif p[5] == 'anulata' %}
+            <span class="badge bg-danger">Anulată</span>
+        {% endif %}
+    </td>
+
+    <td>
+        {% if p[6] %}
+            <span class="badge bg-success">
+                Consultație creată
+            </span>
+        {% else %}
+            <form method="post" action="/medic_adauga_consultatie/{{ p[0] }}">
+                
+                <input type="text"
+                       name="diagnostic"
+                       class="form-control form-control-sm mb-1"
+                       placeholder="Diagnostic"
+                       required>
+
+                <textarea name="observatii"
+                          class="form-control form-control-sm mb-1"
+                          placeholder="Observații"></textarea>
+
+                <button type="submit"
+                        class="btn btn-success btn-sm">
+                    Adaugă consultație
+                </button>
+
+            </form>
+        {% endif %}
+    </td>
+</tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header fw-bold">
+        Consultațiile mele
+    </div>
+
+    <div class="card-body">
+        <table class="table table-hover">
+           <thead>
+    <tr>
+        <th>ID</th>
+        <th>Pacient</th>
+        <th>Data</th>
+        <th>Diagnostic</th>
+        <th>Observații</th>
+        <th>Acțiuni</th>
+    </tr>
+</thead>
+
+            <tbody>
+                {% for c in consultatii %}
+                <tr>
+    <td>{{ c[0] }}</td>
+    <td>{{ c[1] }} {{ c[2] }}</td>
+    <td>{{ c[3] }}</td>
+    <td>{{ c[4] }}</td>
+    <td>{{ c[5] }}</td>
+
+    <td>
+        <a href="/medic_sterge_consultatie/{{ c[0] }}"
+           class="btn btn-danger btn-sm"
+           onclick="return confirm('Sigur ștergi această consultație?')">
+            Șterge
+        </a>
+    </td>
+</tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}
