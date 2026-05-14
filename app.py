@@ -14,7 +14,20 @@ conn = mysql.connector.connect(
 )
 
 cursor = conn.cursor()
+def reconnect_db():
+    global conn, cursor
 
+    try:
+        conn.ping(reconnect=True, attempts=3, delay=2)
+    except:
+        conn = mysql.connector.connect(
+            host="yamabiko.proxy.rlwy.net",
+            user="root",
+            password="bSvMNGfqXMKpNIgbvkmCWkeJJkwwRxAa",
+            database="railway",
+            port=38937
+        )
+        cursor = conn.cursor()
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
