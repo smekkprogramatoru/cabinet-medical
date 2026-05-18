@@ -2,134 +2,180 @@
 
 {% block content %}
 
-<h1 class="mb-4">Dashboard pacient</h1>
+<div class="container-fluid">
 
-<div class="card shadow-sm mb-4">
-    <div class="card-body">
-        <h4>{{ pacient[0] }} {{ pacient[1] }}</h4>
+    <h1 class="mb-4 fw-bold text-primary">
+        Dashboard pacient
+    </h1>
 
-        <p class="mb-1">
-            <strong>Telefon:</strong> {{ pacient[2] }}
-        </p>
+    <!-- CARD PACIENT -->
+    <div class="card shadow-sm border-0 rounded-4 mb-4">
+        <div class="card-body d-flex align-items-center">
 
-        <p>
-            <strong>Email:</strong> {{ pacient[3] }}
-        </p>
-    </div>
-</div>
+            <img src="{{ url_for('static', filename='avatar.png') }}"
+                 width="70"
+                 class="rounded-circle border me-3">
 
-<div class="card shadow-sm mb-4">
-    <div class="card-header fw-bold">
-        Programările mele
-    </div>
+            <div>
+                <h3 class="mb-1">
+                    {{ pacient[0] }} {{ pacient[1] }}
+                </h3>
 
-    <div class="card-body">
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Medic</th>
-                    <th>Data</th>
-                    <th>Ora</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
+                <p class="mb-1 text-muted">
+                    <strong>Telefon:</strong> {{ pacient[2] }}
+                </p>
 
-            <tbody>
-                {% for p in programari %}
-                <tr>
-                    <td>{{ p[0] }}</td>
-                    <td>Dr. {{ p[1] }} {{ p[2] }}</td>
-                    <td>{{ p[3] }}</td>
-                    <td>{{ p[4] }}</td>
+                <p class="mb-0 text-muted">
+                    <strong>Email:</strong> {{ pacient[3] }}
+                </p>
+            </div>
 
-                    <td>
-                        {% if p[5] == 'programata' %}
-                            <span class="badge bg-warning text-dark">
-                                Programată
-                            </span>
-
-                        {% elif p[5] == 'finalizata' %}
-                            <span class="badge bg-success">
-                                Finalizată
-                            </span>
-
-                        {% elif p[5] == 'anulata' %}
-                            <span class="badge bg-danger">
-                                Anulată
-                            </span>
-                        {% endif %}
-                    </td>
-
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<div class="card shadow-sm mb-4">
-    <div class="card-header fw-bold">
-        Consultațiile mele
+        </div>
     </div>
 
-    <div class="card-body">
-        <table class="table table-hover">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Medic</th>
-                    <th>Data</th>
-                    <th>Diagnostic</th>
-                    <th>Observații</th>
-                </tr>
-            </thead>
+    <!-- PROGRAMARI -->
+    <div class="card shadow-sm border-0 rounded-4 mb-4">
 
-            <tbody>
-                {% for c in consultatii %}
-                <tr>
-                    <td>{{ c[0] }}</td>
-                    <td>Dr. {{ c[1] }} {{ c[2] }}</td>
-                    <td>{{ c[3] }}</td>
-                    <td>{{ c[4] }}</td>
-                    <td>{{ c[5] }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="card-header bg-white border-0 pt-4">
+            <h4 class="fw-bold text-primary">
+                📅 Programările mele
+            </h4>
+        </div>
+
+        <div class="card-body">
+            <table class="table align-middle table-hover">
+
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Medic</th>
+                        <th>Data</th>
+                        <th>Ora</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for p in programari %}
+                    <tr>
+                        <td>{{ p[0] }}</td>
+                        <td>Dr. {{ p[1] }} {{ p[2] }}</td>
+                        <td>{{ p[3] }}</td>
+                        <td>{{ p[4] }}</td>
+
+                        <td>
+                            {% if p[5] == 'programata' %}
+                                <span class="badge bg-warning text-dark">
+                                    Programată
+                                </span>
+
+                            {% elif p[5] == 'finalizata' %}
+                                <span class="badge bg-success">
+                                    Finalizată
+                                </span>
+
+                            {% elif p[5] == 'anulata' %}
+                                <span class="badge bg-danger">
+                                    Anulată
+                                </span>
+
+                            {% else %}
+                                <span class="badge bg-secondary">
+                                    {{ p[5] }}
+                                </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+
     </div>
-</div>
 
-<div class="card shadow-sm">
-    <div class="card-header fw-bold">
-        Rețetele mele
+    <!-- CONSULTATII -->
+    <div class="card shadow-sm border-0 rounded-4 mb-4">
+
+        <div class="card-header bg-white border-0 pt-4">
+            <h4 class="fw-bold text-primary">
+                🩺 Consultațiile mele
+            </h4>
+        </div>
+
+        <div class="card-body">
+            <table class="table align-middle table-hover">
+
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Medic</th>
+                        <th>Data</th>
+                        <th>Diagnostic</th>
+                        <th>Observații</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for c in consultatii %}
+                    <tr>
+                        <td>{{ c[0] }}</td>
+                        <td>Dr. {{ c[1] }} {{ c[2] }}</td>
+                        <td>{{ c[3] }}</td>
+                        <td>{{ c[4] }}</td>
+                        <td style="white-space: normal;">
+                            {{ c[5] }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+
     </div>
 
-    <div class="card-body">
-        <table class="table table-hover">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Medic</th>
-                    <th>Diagnostic</th>
-                    <th>Medicamente</th>
-                    <th>Data emiterii</th>
-                </tr>
-            </thead>
+    <!-- RETETE -->
+    <div class="card shadow-sm border-0 rounded-4">
 
-            <tbody>
-                {% for r in retete %}
-                <tr>
-                    <td>{{ r[0] }}</td>
-                    <td>Dr. {{ r[1] }} {{ r[2] }}</td>
-                    <td>{{ r[3] }}</td>
-                    <td>{{ r[4] }}</td>
-                    <td>{{ r[5] }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="card-header bg-white border-0 pt-4">
+            <h4 class="fw-bold text-primary">
+                💊 Rețetele mele
+            </h4>
+        </div>
+
+        <div class="card-body">
+            <table class="table align-middle table-hover">
+
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Medic</th>
+                        <th>Diagnostic</th>
+                        <th>Medicamente</th>
+                        <th>Data emiterii</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for r in retete %}
+                    <tr>
+                        <td>{{ r[0] }}</td>
+                        <td>Dr. {{ r[1] }} {{ r[2] }}</td>
+                        <td>{{ r[3] }}</td>
+                        <td style="white-space: normal;">
+                            {{ r[4] }}
+                        </td>
+                        <td>{{ r[5] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+
     </div>
+
 </div>
 
 {% endblock %}
