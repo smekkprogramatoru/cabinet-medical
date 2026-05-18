@@ -18,8 +18,13 @@ def reconnect_db():
     global conn, cursor
 
     try:
+        if not conn.is_connected():
+            conn.reconnect(attempts=3, delay=2)
+
         conn.ping(reconnect=True, attempts=3, delay=2)
-    except:
+        cursor = conn.cursor()
+
+    except Exception:
         conn = mysql.connector.connect(
             host="yamabiko.proxy.rlwy.net",
             user="root",
@@ -28,6 +33,11 @@ def reconnect_db():
             port=38937
         )
         cursor = conn.cursor()
+
+
+@app.before_request
+def before_request():
+    reconnect_db()
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
