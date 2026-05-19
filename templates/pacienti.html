@@ -100,7 +100,12 @@
 
             <div class="col-md-3">
                 <label class="form-label">CNP</label>
-                <input type="text" name="cnp" class="form-control form-control-sm table-edit-input">
+                <input type="text"
+       name="cnp"
+       maxlength="13"
+       pattern="[0-9]{13}"
+       class="form-control form-control-sm table-edit-input"
+       required>
             </div>
 
             <div class="col-md-3">
@@ -162,9 +167,15 @@
                     </td>
 
                     <td>
-                        <input type="text" name="cnp" class="form-control form-control-sm table-edit-input" value="{{ p[3] }}">
+                        <input type="text"
+       name="cnp"
+       maxlength="13"
+       pattern="[0-9]{13}"
+       class="form-control form-control-sm table-edit-input"
+       value="{{ p[3] }}"
+       required>
                     </td>
-
+D
                     <td>
                         <input type="date" name="data_nasterii" class="form-control form-control-sm table-edit-input" value="{{ p[4] }}">
                     </td>
