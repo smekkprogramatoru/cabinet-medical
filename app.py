@@ -360,7 +360,7 @@ def adauga():
     prenume = request.form["prenume"]
     cnp = request.form["cnp"]
     if not cnp.isdigit() or len(cnp) != 13:
-    return "CNP invalid! Trebuie să conțină exact 13 cifre."
+        return "CNP invalid! Trebuie să conțină exact 13 cifre."
     data_nasterii = request.form["data_nasterii"]
     telefon = request.form["telefon"]
     email = request.form["email"]
@@ -431,7 +431,7 @@ def actualizeaza_pacient(id):
     prenume = request.form["prenume"]
     cnp = request.form["cnp"]
     if not cnp.isdigit() or len(cnp) != 13:
-    return "CNP invalid! Trebuie să conțină exact 13 cifre."
+        return "CNP invalid! Trebuie să conțină exact 13 cifre."
     data_nasterii = request.form["data_nasterii"]
     telefon = request.form["telefon"]
     email = request.form["email"]
