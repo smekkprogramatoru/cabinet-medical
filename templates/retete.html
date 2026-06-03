@@ -29,7 +29,40 @@
     <h1>Lista rețete medicale</h1>
 
     <div>
-        <a href="/retete?show_add=1" class="btn btn-primary">+ Adaugă rețetă</a>
+        <a href="/retete?show_add=1{% if search %}&search={{ search }}{% endif %}" class="btn btn-primary">
+            + Adaugă rețetă
+        </a>
+    </div>
+</div>
+
+<!-- CĂUTARE -->
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+
+        <form method="get" action="/retete" class="row g-2">
+
+            <div class="col-md-6">
+                <input type="text"
+                       name="search"
+                       class="form-control form-control-sm"
+                       placeholder="Caută după pacient, medic, diagnostic, medicamente sau dată"
+                       value="{{ search if search else '' }}">
+            </div>
+
+            <div class="col-auto">
+                <button type="submit" class="btn btn-success btn-sm">
+                    Caută
+                </button>
+            </div>
+
+            <div class="col-auto">
+                <a href="/retete" class="btn btn-secondary btn-sm">
+                    Resetare
+                </a>
+            </div>
+
+        </form>
+
     </div>
 </div>
 
@@ -66,7 +99,10 @@
 
             <div class="col-12">
                 <button type="submit" class="btn btn-success">Salvează</button>
-                <a href="/retete" class="btn btn-secondary">Anulează</a>
+
+                <a href="/retete{% if search %}?search={{ search }}{% endif %}" class="btn btn-secondary">
+                    Anulează
+                </a>
             </div>
 
         </form>
@@ -120,7 +156,8 @@
                             Salvează
                         </button>
 
-                        <a href="/retete" class="btn btn-secondary btn-sm table-edit-btn">
+                        <a href="/retete{% if search %}?search={{ search }}{% endif %}"
+                           class="btn btn-secondary btn-sm table-edit-btn">
                             Anulează
                         </a>
                     </td>
@@ -137,7 +174,8 @@
                     <td>{{ r[7] }}</td>
 
                     <td class="text-end">
-                        <a href="/retete?edit_id={{ r[0] }}" class="btn btn-warning btn-sm">
+                        <a href="/retete?edit_id={{ r[0] }}{% if search %}&search={{ search }}{% endif %}"
+                           class="btn btn-warning btn-sm">
                             Modifică
                         </a>
 

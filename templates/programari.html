@@ -6,7 +6,41 @@
     <h1>Lista programări</h1>
 
     <div>
-        <a href="/programari?show_add=1" class="btn btn-primary">+ Adaugă programare</a>
+        <a href="/programari?show_add=1{% if search %}&search={{ search }}{% endif %}"
+           class="btn btn-primary">
+            + Adaugă programare
+        </a>
+    </div>
+</div>
+
+<!-- CĂUTARE -->
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+
+        <form method="get" action="/programari" class="row g-2">
+
+            <div class="col-md-6">
+                <input type="text"
+                       name="search"
+                       class="form-control form-control-sm"
+                       placeholder="Caută după pacient, medic, status sau dată"
+                       value="{{ search if search else '' }}">
+            </div>
+
+            <div class="col-auto">
+                <button type="submit" class="btn btn-success btn-sm">
+                    Caută
+                </button>
+            </div>
+
+            <div class="col-auto">
+                <a href="/programari" class="btn btn-secondary btn-sm">
+                    Resetare
+                </a>
+            </div>
+
+        </form>
+
     </div>
 </div>
 
@@ -58,7 +92,11 @@
 
             <div class="col-12">
                 <button type="submit" class="btn btn-success">Salvează</button>
-                <a href="/programari" class="btn btn-secondary">Anulează</a>
+
+                <a href="/programari{% if search %}?search={{ search }}{% endif %}"
+                   class="btn btn-secondary">
+                    Anulează
+                </a>
             </div>
 
         </form>
@@ -131,7 +169,8 @@
                                 Salvează
                             </button>
 
-                            <a href="/programari" class="btn btn-secondary btn-sm">
+                            <a href="/programari{% if search %}?search={{ search }}{% endif %}"
+                               class="btn btn-secondary btn-sm">
                                 Anulează
                             </a>
                         </td>
@@ -169,7 +208,8 @@
                         </td>
 
                         <td class="text-end">
-                            <a href="/programari?edit_id={{ pr[0] }}" class="btn btn-warning btn-sm">
+                            <a href="/programari?edit_id={{ pr[0] }}{% if search %}&search={{ search }}{% endif %}"
+                               class="btn btn-warning btn-sm">
                                 Modifică
                             </a>
 

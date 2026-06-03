@@ -465,7 +465,33 @@ def programari():
 
     edit_id = request.args.get("edit_id")
     show_add = request.args.get("show_add")
+    search = request.args.get("search")
 
+    if search:
+    value = f"%{search}%"
+
+    cursor.execute("""
+        SELECT p.id_programare,
+               pa.nume,
+               pa.prenume,
+               m.nume,
+               m.prenume,
+               p.data_programare,
+               p.ora,
+               p.status,
+               c.id_consultatie
+        FROM programari p
+        JOIN pacienti pa ON p.id_pacient = pa.id_pacient
+        JOIN medici m ON p.id_medic = m.id_medic
+        LEFT JOIN consultatii c ON p.id_programare = c.id_programare
+        WHERE pa.nume LIKE %s
+           OR pa.prenume LIKE %s
+           OR m.nume LIKE %s
+           OR m.prenume LIKE %s
+           OR p.status LIKE %s
+    """, (value, value, value, value, value))
+
+else:
     cursor.execute("""
         SELECT p.id_programare,
                pa.nume,
@@ -495,7 +521,8 @@ def programari():
         pacienti=pacienti,
         medici=medici,
         edit_id=int(edit_id) if edit_id else None,
-        show_add=True if show_add else False
+        show_add=True if show_add else False,
+        search=search
     )
 
 
@@ -659,7 +686,7 @@ def consultatii():
     show_add = request.args.get("show_add")
     edit_id = request.args.get("edit_id")
     consultatie_id = request.args.get("consultatie_id")
-
+    search = request.args.get("search")
     if consultatie_id:
         cursor.execute("""
             SELECT c.id_consultatie,
@@ -695,16 +722,45 @@ def consultatii():
 
     consultatii = cursor.fetchall()
 
+    if search:
+    value = f"%{search}%"
     cursor.execute("""
-        SELECT pr.id_programare,
+        SELECT c.id_consultatie,
                p.nume, p.prenume,
                m.nume, m.prenume,
                pr.data_programare,
-               pr.ora
-        FROM programari pr
+               c.diagnostic,
+               c.observatii,
+               r.id_reteta
+        FROM consultatii c
+        JOIN programari pr ON c.id_programare = pr.id_programare
         JOIN pacienti p ON pr.id_pacient = p.id_pacient
         JOIN medici m ON pr.id_medic = m.id_medic
-        WHERE pr.status != 'finalizata'
+        LEFT JOIN retete r ON c.id_consultatie = r.id_consultatie
+        WHERE p.nume LIKE %s
+           OR p.prenume LIKE %s
+           OR m.nume LIKE %s
+           OR m.prenume LIKE %s
+           OR c.diagnostic LIKE %s
+           OR c.observatii LIKE %s
+           OR pr.data_programare LIKE %s
+        ORDER BY pr.data_programare DESC
+    """, (value, value, value, value, value, value, value))
+else:
+    cursor.execute("""
+        SELECT c.id_consultatie,
+               p.nume, p.prenume,
+               m.nume, m.prenume,
+               pr.data_programare,
+               c.diagnostic,
+               c.observatii,
+               r.id_reteta
+        FROM consultatii c
+        JOIN programari pr ON c.id_programare = pr.id_programare
+        JOIN pacienti p ON pr.id_pacient = p.id_pacient
+        JOIN medici m ON pr.id_medic = m.id_medic
+        LEFT JOIN retete r ON c.id_consultatie = r.id_consultatie
+        ORDER BY pr.data_programare DESC
     """)
     programari = cursor.fetchall()
 
@@ -713,7 +769,8 @@ def consultatii():
         consultatii=consultatii,
         programari=programari,
         show_add=True if show_add else False,
-        edit_id=int(edit_id) if edit_id else None
+        edit_id=int(edit_id) if edit_id else None,
+        search=search
     )
 
 
@@ -791,6 +848,7 @@ def retete():
     edit_id = request.args.get("edit_id")
     reteta_id = request.args.get("reteta_id")
     id_consultatie_selectata = request.args.get("id_consultatie")
+    search = request.args.get("search")
 
     if reteta_id:
         cursor.execute("""
@@ -825,14 +883,43 @@ def retete():
 
     retete = cursor.fetchall()
 
+    if search:
+    value = f"%{search}%"
     cursor.execute("""
-        SELECT c.id_consultatie,
-               p.nume,
-               p.prenume,
-               c.diagnostic
-        FROM consultatii c
+        SELECT r.id_reteta,
+               p.nume, p.prenume,
+               m.nume, m.prenume,
+               c.diagnostic,
+               r.medicamente,
+               r.data_emitere
+        FROM retete r
+        JOIN consultatii c ON r.id_consultatie = c.id_consultatie
         JOIN programari pr ON c.id_programare = pr.id_programare
         JOIN pacienti p ON pr.id_pacient = p.id_pacient
+        JOIN medici m ON pr.id_medic = m.id_medic
+        WHERE p.nume LIKE %s
+           OR p.prenume LIKE %s
+           OR m.nume LIKE %s
+           OR m.prenume LIKE %s
+           OR c.diagnostic LIKE %s
+           OR r.medicamente LIKE %s
+           OR r.data_emitere LIKE %s
+        ORDER BY r.data_emitere DESC
+    """, (value, value, value, value, value, value, value))
+else:
+    cursor.execute("""
+        SELECT r.id_reteta,
+               p.nume, p.prenume,
+               m.nume, m.prenume,
+               c.diagnostic,
+               r.medicamente,
+               r.data_emitere
+        FROM retete r
+        JOIN consultatii c ON r.id_consultatie = c.id_consultatie
+        JOIN programari pr ON c.id_programare = pr.id_programare
+        JOIN pacienti p ON pr.id_pacient = p.id_pacient
+        JOIN medici m ON pr.id_medic = m.id_medic
+        ORDER BY r.data_emitere DESC
     """)
     consultatii = cursor.fetchall()
 
@@ -842,7 +929,8 @@ def retete():
         consultatii=consultatii,
         show_add=True if show_add else False,
         edit_id=int(edit_id) if edit_id else None,
-        id_consultatie_selectata=id_consultatie_selectata
+        id_consultatie_selectata=id_consultatie_selectata,
+        search=search
     )
 
 
