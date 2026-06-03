@@ -298,6 +298,8 @@ def pacienti():
     if session["rol"] != "admin":
         return redirect("/")
 
+    reconnect_db()
+
     search = request.args.get("search")
     show_add = request.args.get("show_add")
     edit_id = request.args.get("edit_id")
@@ -309,11 +311,13 @@ def pacienti():
             SELECT id_pacient, nume, prenume, CNP, data_nasterii, telefon, email
             FROM pacienti
             WHERE nume LIKE %s OR prenume LIKE %s OR CNP LIKE %s
+            ORDER BY id_pacient DESC
         """, (value, value, value))
     else:
         cursor.execute("""
             SELECT id_pacient, nume, prenume, CNP, data_nasterii, telefon, email
             FROM pacienti
+            ORDER BY id_pacient DESC
         """)
 
     pacienti = cursor.fetchall()
