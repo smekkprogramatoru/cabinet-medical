@@ -913,7 +913,39 @@ def stoc():
     reconnect_db()
 
     filtru = request.args.get("filtru", "toate")
+    show_edit = request.args.get("show_edit")
+    produs_selectat = request.args.get("produs_selectat")
+    search = request.args.get("search")
 
+    # lista pentru dropdown / căutare modificare
+    if search:
+        value = f"%{search}%"
+        cursor.execute("""
+            SELECT id_stoc, denumire, categorie, cantitate, unitate, data_expirare, furnizor, observatii
+            FROM stoc
+            WHERE denumire LIKE %s OR categorie LIKE %s OR furnizor LIKE %s
+            ORDER BY denumire
+        """, (value, value, value))
+    else:
+        cursor.execute("""
+            SELECT id_stoc, denumire, categorie, cantitate, unitate, data_expirare, furnizor, observatii
+            FROM stoc
+            ORDER BY denumire
+        """)
+
+    produse_editare = cursor.fetchall()
+
+    produs_editat = None
+
+    if produs_selectat:
+        cursor.execute("""
+            SELECT id_stoc, denumire, categorie, cantitate, unitate, data_expirare, furnizor, observatii
+            FROM stoc
+            WHERE id_stoc = %s
+        """, (produs_selectat,))
+        produs_editat = cursor.fetchone()
+
+    # tabel principal cu filtre
     if filtru == "medicamente":
         cursor.execute("""
             SELECT id_stoc, denumire, categorie, cantitate, unitate, data_expirare, furnizor, observatii
@@ -938,6 +970,14 @@ def stoc():
             ORDER BY denumire
         """)
 
+    elif filtru == "redus":
+        cursor.execute("""
+            SELECT id_stoc, denumire, categorie, cantitate, unitate, data_expirare, furnizor, observatii
+            FROM stoc
+            WHERE cantitate > 0 AND cantitate <= 5
+            ORDER BY denumire
+        """)
+
     elif filtru == "disponibil":
         cursor.execute("""
             SELECT id_stoc, denumire, categorie, cantitate, unitate, data_expirare, furnizor, observatii
@@ -958,8 +998,49 @@ def stoc():
     return render_template(
         "stoc.html",
         produse=produse,
-        filtru=filtru
+        produse_editare=produse_editare,
+        produs_editat=produs_editat,
+        filtru=filtru,
+        show_edit=True if show_edit else False,
+        search=search
     )
+
+@app.route("/actualizeaza_stoc/<int:id>", methods=["POST"])
+def actualizeaza_stoc(id):
+    if "user_id" not in session:
+        return redirect("/login")
+
+    if session["rol"] != "admin":
+        return redirect("/")
+
+    reconnect_db()
+
+    denumire = request.form["denumire"]
+    categorie = request.form["categorie"]
+    cantitate = request.form["cantitate"]
+    unitate = request.form["unitate"]
+    data_expirare = request.form["data_expirare"]
+    furnizor = request.form["furnizor"]
+    observatii = request.form["observatii"]
+
+    if data_expirare == "":
+        data_expirare = None
+
+    cursor.execute("""
+        UPDATE stoc
+        SET denumire=%s,
+            categorie=%s,
+            cantitate=%s,
+            unitate=%s,
+            data_expirare=%s,
+            furnizor=%s,
+            observatii=%s
+        WHERE id_stoc=%s
+    """, (denumire, categorie, cantitate, unitate, data_expirare, furnizor, observatii, id))
+
+    conn.commit()
+
+    return redirect("/stoc?show_edit=1")
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -9,7 +9,152 @@
             Gestionarea medicamentelor și echipamentelor medicale disponibile în cabinet
         </p>
     </div>
+
+    <div>
+        <a href="/stoc?show_edit=1" class="btn btn-warning">
+            ✏️ Modifică stoc
+        </a>
+    </div>
 </div>
+
+{% if show_edit %}
+<div class="card shadow-sm mb-4">
+    <div class="card-header fw-bold">
+        Modifică produs din stoc
+    </div>
+
+    <div class="card-body">
+
+        <form method="get" action="/stoc" class="row g-2 mb-3">
+            <input type="hidden" name="show_edit" value="1">
+
+            <div class="col-md-6">
+                <input type="text"
+                       name="search"
+                       class="form-control"
+                       placeholder="Caută produs după denumire / categorie / furnizor"
+                       value="{{ search if search else '' }}">
+            </div>
+
+            <div class="col-auto">
+                <button type="submit" class="btn btn-success">
+                    Caută
+                </button>
+            </div>
+
+            <div class="col-auto">
+                <a href="/stoc?show_edit=1" class="btn btn-secondary">
+                    Resetare
+                </a>
+            </div>
+        </form>
+
+        <form method="get" action="/stoc" class="row g-2 mb-4">
+            <input type="hidden" name="show_edit" value="1">
+
+            <div class="col-md-6">
+                <label class="form-label">Selectează produs</label>
+                <select name="produs_selectat"
+                        class="form-select"
+                        onchange="this.form.submit()">
+
+                    <option value="">Alege produsul pentru modificare</option>
+
+                    {% for p in produse_editare %}
+                    <option value="{{ p[0] }}"
+                        {% if produs_editat and produs_editat[0] == p[0] %}selected{% endif %}>
+                        {{ p[1] }} - {{ p[2] }} - cantitate: {{ p[3] }}
+                    </option>
+                    {% endfor %}
+
+                </select>
+            </div>
+        </form>
+
+        {% if produs_editat %}
+        <form method="post" action="/actualizeaza_stoc/{{ produs_editat[0] }}" class="row g-3">
+
+            <div class="col-md-4">
+                <label class="form-label">Denumire</label>
+                <input type="text"
+                       name="denumire"
+                       class="form-control"
+                       value="{{ produs_editat[1] }}"
+                       required>
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Categorie</label>
+                <select name="categorie" class="form-select" required>
+                    <option value="medicament"
+                        {% if produs_editat[2] == 'medicament' %}selected{% endif %}>
+                        Medicament
+                    </option>
+
+                    <option value="echipament"
+                        {% if produs_editat[2] == 'echipament' %}selected{% endif %}>
+                        Echipament
+                    </option>
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <label class="form-label">Cantitate</label>
+                <input type="number"
+                       name="cantitate"
+                       class="form-control"
+                       value="{{ produs_editat[3] }}"
+                       min="0"
+                       required>
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Unitate</label>
+                <input type="text"
+                       name="unitate"
+                       class="form-control"
+                       value="{{ produs_editat[4] }}">
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Data expirării</label>
+                <input type="date"
+                       name="data_expirare"
+                       class="form-control"
+                       value="{{ produs_editat[5] if produs_editat[5] else '' }}">
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Furnizor</label>
+                <input type="text"
+                       name="furnizor"
+                       class="form-control"
+                       value="{{ produs_editat[6] }}">
+            </div>
+
+            <div class="col-md-12">
+                <label class="form-label">Observații</label>
+                <textarea name="observatii"
+                          class="form-control"
+                          rows="3">{{ produs_editat[7] }}</textarea>
+            </div>
+
+            <div class="col-12">
+                <button type="submit" class="btn btn-success">
+                    Salvează modificările
+                </button>
+
+                <a href="/stoc" class="btn btn-secondary">
+                    Anulează
+                </a>
+            </div>
+
+        </form>
+        {% endif %}
+
+    </div>
+</div>
+{% endif %}
 
 <!-- FILTRE -->
 <div class="card shadow-sm mb-4">
@@ -33,6 +178,11 @@
         <a href="/stoc?filtru=disponibil"
            class="btn {% if filtru == 'disponibil' %}btn-secondary{% else %}btn-outline-secondary{% endif %}">
             Stoc disponibil
+        </a>
+
+        <a href="/stoc?filtru=redus"
+           class="btn {% if filtru == 'redus' %}btn-warning{% else %}btn-outline-warning{% endif %}">
+            Stoc redus
         </a>
 
         <a href="/stoc?filtru=epuizat"
