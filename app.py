@@ -1276,8 +1276,6 @@ def fise_medicale():
         """)
 
     fise = cursor.fetchall()
-    print("NUMAR FISE:", len(fise))
-    print("FISE:", fise[:3])
 
     cursor.execute("""
         SELECT id_pacient, nume, prenume
