@@ -139,46 +139,51 @@ def dashboard_medic():
     """, (id_medic,))
     orar = cursor.fetchall()
 
+    cursor.execute("""
+        SELECT COUNT(*)
+        FROM programari
+        WHERE id_medic = %s
+    """, (id_medic,))
+    total_programari = cursor.fetchone()[0]
+
+    cursor.execute("""
+        SELECT COUNT(*)
+        FROM consultatii c
+        JOIN programari pr ON c.id_programare = pr.id_programare
+        WHERE pr.id_medic = %s
+    """, (id_medic,))
+    total_consultatii = cursor.fetchone()[0]
+
+    cursor.execute("""
+        SELECT COUNT(*)
+        FROM programari
+        WHERE id_medic = %s AND status = 'programata'
+    """, (id_medic,))
+    programari_programate = cursor.fetchone()[0]
+
+    cursor.execute("""
+        SELECT COUNT(*)
+        FROM programari
+        WHERE id_medic = %s AND status = 'finalizata'
+    """, (id_medic,))
+    programari_finalizate = cursor.fetchone()[0]
+
+    cursor.execute("""
+        SELECT COUNT(*)
+        FROM programari
+        WHERE id_medic = %s AND status = 'anulata'
+    """, (id_medic,))
+    programari_anulate = cursor.fetchone()[0]
+
     return render_template(
         "dashboard_medic.html",
         medic=medic,
-        orar=orar
-    )
-
-@app.route("/programari_medic")
-def programari_medic():
-
-    if "user_id" not in session:
-        return redirect("/login")
-
-    if session["rol"] != "medic":
-        return redirect("/")
-
-    reconnect_db()
-
-    cursor.execute("""
-        SELECT
-            pr.id_programare,
-            p.nume,
-            p.prenume,
-            pr.data_programare,
-            pr.ora,
-            pr.status,
-            c.id_consultatie
-        FROM programari pr
-        JOIN pacienti p
-            ON pr.id_pacient = p.id_pacient
-        LEFT JOIN consultatii c
-            ON pr.id_programare = c.id_programare
-        WHERE pr.id_medic = %s
-        ORDER BY pr.data_programare DESC, pr.ora DESC
-    """, (session["id_medic"],))
-
-    programari = cursor.fetchall()
-
-    return render_template(
-        "programari_medic.html",
-        programari=programari
+        orar=orar,
+        total_programari=total_programari,
+        total_consultatii=total_consultatii,
+        programari_programate=programari_programate,
+        programari_finalizate=programari_finalizate,
+        programari_anulate=programari_anulate
     )
 
 @app.route("/consultatii_medic")
