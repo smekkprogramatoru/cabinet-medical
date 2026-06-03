@@ -902,5 +902,64 @@ def sterge_reteta(id):
     return redirect("/retete")
 
 
+@app.route("/stoc")
+def stoc():
+    if "user_id" not in session:
+        return redirect("/login")
+
+    if session["rol"] != "admin":
+        return redirect("/")
+
+    reconnect_db()
+
+    filtru = request.args.get("filtru", "toate")
+
+    if filtru == "medicamente":
+        cursor.execute("""
+            SELECT id_stoc, denumire, categorie, cantitate, unitate, data_expirare, furnizor, observatii
+            FROM stoc
+            WHERE categorie = 'medicament'
+            ORDER BY denumire
+        """)
+
+    elif filtru == "echipamente":
+        cursor.execute("""
+            SELECT id_stoc, denumire, categorie, cantitate, unitate, data_expirare, furnizor, observatii
+            FROM stoc
+            WHERE categorie = 'echipament'
+            ORDER BY denumire
+        """)
+
+    elif filtru == "epuizat":
+        cursor.execute("""
+            SELECT id_stoc, denumire, categorie, cantitate, unitate, data_expirare, furnizor, observatii
+            FROM stoc
+            WHERE cantitate = 0
+            ORDER BY denumire
+        """)
+
+    elif filtru == "disponibil":
+        cursor.execute("""
+            SELECT id_stoc, denumire, categorie, cantitate, unitate, data_expirare, furnizor, observatii
+            FROM stoc
+            WHERE cantitate > 0
+            ORDER BY denumire
+        """)
+
+    else:
+        cursor.execute("""
+            SELECT id_stoc, denumire, categorie, cantitate, unitate, data_expirare, furnizor, observatii
+            FROM stoc
+            ORDER BY denumire
+        """)
+
+    produse = cursor.fetchall()
+
+    return render_template(
+        "stoc.html",
+        produse=produse,
+        filtru=filtru
+    )
+
 if __name__ == "__main__":
     app.run(debug=True)

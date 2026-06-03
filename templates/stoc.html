@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="mb-1">Stoc medical</h1>
+        <p class="text-muted mb-0">
+            Gestionarea medicamentelor și echipamentelor medicale disponibile în cabinet
+        </p>
+    </div>
+</div>
+
+<!-- FILTRE -->
+<div class="card shadow-sm mb-4">
+    <div class="card-body d-flex flex-wrap gap-2">
+
+        <a href="/stoc"
+           class="btn {% if filtru == 'toate' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+            Toate produsele
+        </a>
+
+        <a href="/stoc?filtru=medicamente"
+           class="btn {% if filtru == 'medicamente' %}btn-success{% else %}btn-outline-success{% endif %}">
+            Medicamente
+        </a>
+
+        <a href="/stoc?filtru=echipamente"
+           class="btn {% if filtru == 'echipamente' %}btn-info text-white{% else %}btn-outline-info{% endif %}">
+            Echipamente
+        </a>
+
+        <a href="/stoc?filtru=disponibil"
+           class="btn {% if filtru == 'disponibil' %}btn-secondary{% else %}btn-outline-secondary{% endif %}">
+            Stoc disponibil
+        </a>
+
+        <a href="/stoc?filtru=epuizat"
+           class="btn {% if filtru == 'epuizat' %}btn-danger{% else %}btn-outline-danger{% endif %}">
+            Stoc epuizat
+        </a>
+
+    </div>
+</div>
+
+<!-- TABEL STOC -->
+<div class="card shadow-sm">
+    <div class="card-header fw-bold">
+        Lista produselor din stoc
+    </div>
+
+    <div class="card-body">
+
+        <table class="table table-striped table-hover align-middle">
+
+            <thead class="table-light">
+                <tr>
+                    <th>ID</th>
+                    <th>Denumire</th>
+                    <th>Categorie</th>
+                    <th>Cantitate</th>
+                    <th>Unitate</th>
+                    <th>Data expirării</th>
+                    <th>Furnizor</th>
+                    <th>Observații</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for s in produse %}
+                <tr>
+                    <td>{{ s[0] }}</td>
+
+                    <td class="fw-semibold">
+                        {{ s[1] }}
+                    </td>
+
+                    <td>
+                        {% if s[2] == 'medicament' %}
+                            <span class="badge bg-success">
+                                Medicament
+                            </span>
+                        {% elif s[2] == 'echipament' %}
+                            <span class="badge bg-info text-dark">
+                                Echipament
+                            </span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        <strong>{{ s[3] }}</strong>
+                    </td>
+
+                    <td>{{ s[4] }}</td>
+
+                    <td>
+                        {% if s[5] %}
+                            {{ s[5] }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+
+                    <td>{{ s[6] }}</td>
+
+                    <td style="white-space: normal;">
+                        {{ s[7] }}
+                    </td>
+
+                    <td>
+                        {% if s[3] == 0 %}
+                            <span class="badge bg-danger">
+                                Epuizat
+                            </span>
+                        {% elif s[3] <= 5 %}
+                            <span class="badge bg-warning text-dark">
+                                Stoc redus
+                            </span>
+                        {% else %}
+                            <span class="badge bg-success">
+                                Disponibil
+                            </span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+
+    </div>
+</div>
+
+{% endblock %}
