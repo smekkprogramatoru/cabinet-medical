@@ -72,7 +72,6 @@ def logout():
     session.clear()
     return redirect("/login")
 
-
 @app.route("/")
 def index():
     if "user_id" not in session:
