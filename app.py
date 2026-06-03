@@ -852,6 +852,8 @@ def retete():
     if session["rol"] != "admin":
         return redirect("/")
 
+    reconnect_db()
+
     show_add = request.args.get("show_add")
     edit_id = request.args.get("edit_id")
     reteta_id = request.args.get("reteta_id")
@@ -873,6 +875,32 @@ def retete():
             JOIN medici m ON pr.id_medic = m.id_medic
             WHERE r.id_reteta = %s
         """, (reteta_id,))
+
+    elif search:
+        value = f"%{search}%"
+
+        cursor.execute("""
+            SELECT r.id_reteta,
+                   p.nume, p.prenume,
+                   m.nume, m.prenume,
+                   c.diagnostic,
+                   r.medicamente,
+                   r.data_emitere
+            FROM retete r
+            JOIN consultatii c ON r.id_consultatie = c.id_consultatie
+            JOIN programari pr ON c.id_programare = pr.id_programare
+            JOIN pacienti p ON pr.id_pacient = p.id_pacient
+            JOIN medici m ON pr.id_medic = m.id_medic
+            WHERE p.nume LIKE %s
+               OR p.prenume LIKE %s
+               OR m.nume LIKE %s
+               OR m.prenume LIKE %s
+               OR c.diagnostic LIKE %s
+               OR r.medicamente LIKE %s
+               OR r.data_emitere LIKE %s
+            ORDER BY r.data_emitere DESC
+        """, (value, value, value, value, value, value, value))
+
     else:
         cursor.execute("""
             SELECT r.id_reteta,
@@ -891,44 +919,17 @@ def retete():
 
     retete = cursor.fetchall()
 
-    if search:
-    value = f"%{search}%"
     cursor.execute("""
-        SELECT r.id_reteta,
-               p.nume, p.prenume,
-               m.nume, m.prenume,
-               c.diagnostic,
-               r.medicamente,
-               r.data_emitere
-        FROM retete r
-        JOIN consultatii c ON r.id_consultatie = c.id_consultatie
+        SELECT c.id_consultatie,
+               p.nume,
+               p.prenume,
+               c.diagnostic
+        FROM consultatii c
         JOIN programari pr ON c.id_programare = pr.id_programare
         JOIN pacienti p ON pr.id_pacient = p.id_pacient
-        JOIN medici m ON pr.id_medic = m.id_medic
-        WHERE p.nume LIKE %s
-           OR p.prenume LIKE %s
-           OR m.nume LIKE %s
-           OR m.prenume LIKE %s
-           OR c.diagnostic LIKE %s
-           OR r.medicamente LIKE %s
-           OR r.data_emitere LIKE %s
-        ORDER BY r.data_emitere DESC
-    """, (value, value, value, value, value, value, value))
-else:
-    cursor.execute("""
-        SELECT r.id_reteta,
-               p.nume, p.prenume,
-               m.nume, m.prenume,
-               c.diagnostic,
-               r.medicamente,
-               r.data_emitere
-        FROM retete r
-        JOIN consultatii c ON r.id_consultatie = c.id_consultatie
-        JOIN programari pr ON c.id_programare = pr.id_programare
-        JOIN pacienti p ON pr.id_pacient = p.id_pacient
-        JOIN medici m ON pr.id_medic = m.id_medic
-        ORDER BY r.data_emitere DESC
+        ORDER BY c.id_consultatie DESC
     """)
+
     consultatii = cursor.fetchall()
 
     return render_template(
