@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="mb-1">Programările mele</h1>
+        <p class="text-muted mb-0">
+            Lista programărilor asociate contului de medic autentificat
+        </p>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+
+        <table class="table table-striped table-hover align-middle">
+
+            <thead class="table-light">
+                <tr>
+                    <th>ID</th>
+                    <th>Pacient</th>
+                    <th>Data</th>
+                    <th>Ora</th>
+                    <th>Status</th>
+                    <th class="text-end">Acțiuni</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for p in programari %}
+                <tr>
+                    <td>{{ p[0] }}</td>
+
+                    <td>
+                        {{ p[1] }} {{ p[2] }}
+                    </td>
+
+                    <td>{{ p[3] }}</td>
+
+                    <td>{{ p[4] }}</td>
+
+                    <td>
+                        {% if p[5] == 'programata' %}
+                            <span class="badge bg-warning text-dark">
+                                Programată
+                            </span>
+
+                        {% elif p[5] == 'finalizata' %}
+                            <span class="badge bg-success">
+                                Finalizată
+                            </span>
+
+                        {% elif p[5] == 'anulata' %}
+                            <span class="badge bg-danger">
+                                Anulată
+                            </span>
+
+                        {% else %}
+                            <span class="badge bg-secondary">
+                                {{ p[5] }}
+                            </span>
+                        {% endif %}
+                    </td>
+
+                    <td class="text-end">
+
+                        {% if p[5] != 'anulata' and not p[6] %}
+
+                            <form method="post"
+                                  action="/medic_adauga_consultatie/{{ p[0] }}"
+                                  class="d-flex flex-column gap-2">
+
+                                <input type="text"
+                                       name="diagnostic"
+                                       class="form-control form-control-sm"
+                                       placeholder="Diagnostic"
+                                       required>
+
+                                <textarea name="observatii"
+                                          class="form-control form-control-sm"
+                                          rows="2"
+                                          placeholder="Observații"></textarea>
+
+                                <button type="submit"
+                                        class="btn btn-primary btn-sm">
+                                    Adaugă consultație
+                                </button>
+
+                            </form>
+
+                        {% elif p[6] %}
+
+                            <span class="badge bg-success">
+                                Consultație creată
+                            </span>
+
+                        {% elif p[5] == 'anulata' %}
+
+                            <span class="badge bg-secondary">
+                                Programare anulată
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+
+    </div>
+</div>
+
+{% endblock %}

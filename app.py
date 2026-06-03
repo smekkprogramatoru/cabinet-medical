@@ -174,6 +174,76 @@ def dashboard_medic():
         consultatii=consultatii
     )
 
+@app.route("/programari_medic")
+def programari_medic():
+
+    if "user_id" not in session:
+        return redirect("/login")
+
+    if session["rol"] != "medic":
+        return redirect("/")
+
+    reconnect_db()
+
+    cursor.execute("""
+        SELECT
+            pr.id_programare,
+            p.nume,
+            p.prenume,
+            pr.data_programare,
+            pr.ora,
+            pr.status,
+            c.id_consultatie
+        FROM programari pr
+        JOIN pacienti p
+            ON pr.id_pacient = p.id_pacient
+        LEFT JOIN consultatii c
+            ON pr.id_programare = c.id_programare
+        WHERE pr.id_medic = %s
+        ORDER BY pr.data_programare DESC, pr.ora DESC
+    """, (session["id_medic"],))
+
+    programari = cursor.fetchall()
+
+    return render_template(
+        "programari_medic.html",
+        programari=programari
+    )
+
+@app.route("/consultatii_medic")
+def consultatii_medic():
+
+    if "user_id" not in session:
+        return redirect("/login")
+
+    if session["rol"] != "medic":
+        return redirect("/")
+
+    reconnect_db()
+
+    cursor.execute("""
+        SELECT
+            c.id_consultatie,
+            p.nume,
+            p.prenume,
+            pr.data_programare,
+            c.diagnostic,
+            c.observatii
+        FROM consultatii c
+        JOIN programari pr
+            ON c.id_programare = pr.id_programare
+        JOIN pacienti p
+            ON pr.id_pacient = p.id_pacient
+        WHERE pr.id_medic = %s
+        ORDER BY pr.data_programare DESC
+    """, (session["id_medic"],))
+
+    consultatii = cursor.fetchall()
+
+    return render_template(
+        "consultatii_medic.html",
+        consultatii=consultatii
+    )
 
 @app.route("/medic_adauga_consultatie/<int:id_programare>", methods=["POST"])
 def medic_adauga_consultatie(id_programare):

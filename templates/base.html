@@ -205,7 +205,9 @@ h1, h2, h3, h4 {
         <a href="/retete">💊 Rețete</a>
 	  <a href="/stoc">📦 Stoc</a>
     {% elif session.get('rol') == 'medic' %}
-        <a href="/dashboard_medic">🩺 Dashboard medic</a>
+    <a href="/dashboard_medic">🩺 Dashboard medic</a>
+    <a href="/programari_medic">📅 Programările mele</a>
+    <a href="/consultatii_medic">📋 Consultațiile mele</a>
 
     {% elif session.get('rol') == 'pacient' %}
         <a href="/dashboard_pacient">👤 Dashboard pacient</a>

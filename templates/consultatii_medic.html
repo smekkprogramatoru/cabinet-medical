@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="mb-1">Consultațiile mele</h1>
+        <p class="text-muted mb-0">
+            Lista consultațiilor realizate de medicul autentificat
+        </p>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+
+        <table class="table table-striped table-hover align-middle">
+
+            <thead class="table-light">
+                <tr>
+                    <th>ID</th>
+                    <th>Pacient</th>
+                    <th>Data</th>
+                    <th>Diagnostic</th>
+                    <th>Observații</th>
+                    <th class="text-end">Acțiuni</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for c in consultatii %}
+                <tr>
+                    <td>{{ c[0] }}</td>
+
+                    <td>{{ c[1] }} {{ c[2] }}</td>
+
+                    <td>{{ c[3] }}</td>
+
+                    <td>{{ c[4] }}</td>
+
+                    <td style="white-space: normal;">
+                        {{ c[5] }}
+                    </td>
+
+                    <td class="text-end">
+                        <a href="/medic_sterge_consultatie/{{ c[0] }}"
+                           class="btn btn-outline-danger btn-sm"
+                           onclick="return confirm('Sigur ștergi consultația?')">
+                            Șterge
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+
+    </div>
+</div>
+
+{% endblock %}
