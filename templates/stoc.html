@@ -11,9 +11,9 @@
     </div>
 
     <div>
-        <a href="/stoc?show_edit=1" class="btn btn-warning">
-            ✏️ Modifică stoc
-        </a>
+        <a href="/stoc?show_edit=1&filtru={{ filtru }}" class="btn btn-warning">
+    ✏️ Modifică stoc
+	</a>
     </div>
 </div>
 
@@ -27,6 +27,7 @@
 
         <form method="get" action="/stoc" class="row g-2 mb-3">
             <input type="hidden" name="show_edit" value="1">
+		<input type="hidden" name="filtru" value="{{ filtru }}">
 
             <div class="col-md-6">
                 <input type="text"
@@ -51,6 +52,7 @@
 
         <form method="get" action="/stoc" class="row g-2 mb-4">
             <input type="hidden" name="show_edit" value="1">
+		<input type="hidden" name="filtru" value="{{ filtru }}">
 
             <div class="col-md-6">
                 <label class="form-label">Selectează produs</label>
@@ -73,7 +75,7 @@
 
         {% if produs_editat %}
         <form method="post" action="/actualizeaza_stoc/{{ produs_editat[0] }}" class="row g-3">
-
+	  <input type="hidden" name="filtru" value="{{ filtru }}">
             <div class="col-md-4">
                 <label class="form-label">Denumire</label>
                 <input type="text"
@@ -144,9 +146,9 @@
                     Salvează modificările
                 </button>
 
-                <a href="/stoc" class="btn btn-secondary">
-                    Anulează
-                </a>
+                <a href="/stoc?filtru={{ filtru }}" class="btn btn-secondary">
+   			 Anulează
+			</a>
             </div>
 
         </form>

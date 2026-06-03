@@ -1040,7 +1040,8 @@ def actualizeaza_stoc(id):
 
     conn.commit()
 
-    return redirect("/stoc?show_edit=1")
+    filtru = request.form.get("filtru", "toate")
+return redirect(f"/stoc?show_edit=1&filtru={filtru}")
 
 if __name__ == "__main__":
     app.run(debug=True)
