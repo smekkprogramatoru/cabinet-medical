@@ -186,6 +186,42 @@ def dashboard_medic():
         programari_anulate=programari_anulate
     )
 
+@app.route("/programari_medic")
+def programari_medic():
+
+    if "user_id" not in session:
+        return redirect("/login")
+
+    if session["rol"] != "medic":
+        return redirect("/")
+
+    reconnect_db()
+
+    cursor.execute("""
+        SELECT
+            p.id_programare,
+            pa.nume,
+            pa.prenume,
+            p.data_programare,
+            p.ora,
+            p.status,
+            c.id_consultatie
+        FROM programari p
+        JOIN pacienti pa
+            ON p.id_pacient = pa.id_pacient
+        LEFT JOIN consultatii c
+            ON p.id_programare = c.id_programare
+        WHERE p.id_medic = %s
+        ORDER BY p.data_programare DESC, p.ora DESC
+    """, (session["id_medic"],))
+
+    programari = cursor.fetchall()
+
+    return render_template(
+        "programari_medic.html",
+        programari=programari
+    )
+
 @app.route("/consultatii_medic")
 def consultatii_medic():
 
