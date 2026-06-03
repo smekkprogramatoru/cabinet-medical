@@ -121,6 +121,8 @@ def dashboard_medic():
     if session["rol"] != "medic":
         return redirect("/")
 
+    reconnect_db()
+
     id_medic = session["id_medic"]
 
     cursor.execute("""
@@ -137,41 +139,10 @@ def dashboard_medic():
     """, (id_medic,))
     orar = cursor.fetchall()
 
-    cursor.execute("""
-        SELECT pr.id_programare,
-               p.nume, p.prenume,
-               pr.data_programare,
-               pr.ora,
-               pr.status,
-               c.id_consultatie
-        FROM programari pr
-        JOIN pacienti p ON pr.id_pacient = p.id_pacient
-        LEFT JOIN consultatii c ON pr.id_programare = c.id_programare
-        WHERE pr.id_medic = %s
-        ORDER BY pr.data_programare, pr.ora
-    """, (id_medic,))
-    programari = cursor.fetchall()
-
-    cursor.execute("""
-        SELECT c.id_consultatie,
-               p.nume, p.prenume,
-               pr.data_programare,
-               c.diagnostic,
-               c.observatii
-        FROM consultatii c
-        JOIN programari pr ON c.id_programare = pr.id_programare
-        JOIN pacienti p ON pr.id_pacient = p.id_pacient
-        WHERE pr.id_medic = %s
-        ORDER BY pr.data_programare DESC
-    """, (id_medic,))
-    consultatii = cursor.fetchall()
-
     return render_template(
         "dashboard_medic.html",
         medic=medic,
-        orar=orar,
-        programari=programari,
-        consultatii=consultatii
+        orar=orar
     )
 
 @app.route("/programari_medic")
