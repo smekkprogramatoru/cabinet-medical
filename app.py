@@ -1283,7 +1283,8 @@ def fise_medicale():
         ORDER BY nume, prenume
     """)
     pacienti = cursor.fetchall()
-
+    print("NUMAR FISE:", len(fise))
+    print("FISE:", fise[:3])
     return render_template(
         "fise_medicale.html",
         fise=fise,
