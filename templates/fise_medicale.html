@@ -1,0 +1,318 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+.table td, .table th {
+    vertical-align: middle;
+    font-size: 14px;
+    padding: 9px 10px;
+}
+
+.text-limit {
+    white-space: normal;
+    word-break: break-word;
+    max-width: 260px;
+}
+
+.table-edit-input {
+    font-size: 13px;
+    padding: 5px 7px;
+}
+
+.table-edit-btn {
+    padding: 4px 8px;
+    font-size: 12px;
+}
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="mb-1">Fișe medicale</h1>
+        <p class="text-muted mb-0">
+            Gestionarea informațiilor medicale generale ale pacienților
+        </p>
+    </div>
+
+    <div>
+        <a href="/fise_medicale?show_add=1{% if search %}&search={{ search }}{% endif %}"
+           class="btn btn-primary">
+            + Adaugă fișă medicală
+        </a>
+    </div>
+</div>
+
+<!-- CĂUTARE / DESCĂRCARE PDF -->
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+
+        <form method="get" action="/fise_medicale" class="row g-2 align-items-center">
+
+            <div class="col-md-6">
+                <input type="text"
+                       name="search"
+                       class="form-control form-control-sm"
+                       placeholder="Caută pacient după nume, prenume sau grupă sanguină"
+                       value="{{ search if search else '' }}">
+            </div>
+
+            <div class="col-auto">
+                <button type="submit" class="btn btn-success btn-sm">
+                    Caută
+                </button>
+            </div>
+
+            <div class="col-auto">
+                <a href="/fise_medicale" class="btn btn-secondary btn-sm">
+                    Resetare
+                </a>
+            </div>
+
+            <div class="col-auto">
+                <button type="button"
+                        class="btn btn-outline-danger btn-sm"
+                        onclick="alert('Funcționalitatea de descărcare PDF poate fi implementată într-o versiune viitoare a aplicației.')">
+                    Descarcă fișa medicală PDF
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+{% if show_add %}
+<div class="card shadow-sm mb-4">
+    <div class="card-header fw-bold">
+        Adaugă fișă medicală nouă
+    </div>
+
+    <div class="card-body">
+        <form method="post" action="/adauga_fisa_medicala" class="row g-3">
+
+            <div class="col-md-4">
+                <label class="form-label">Pacient</label>
+                <select name="id_pacient" class="form-select" required>
+                    {% for p in pacienti %}
+                        <option value="{{ p[0] }}">{{ p[1] }} {{ p[2] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <label class="form-label">Grupa sanguină</label>
+                <input type="text"
+                       name="grupa_sanguina"
+                       class="form-control"
+                       maxlength="5"
+                       placeholder="A+">
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Greutate</label>
+                <input type="number"
+                       step="0.01"
+                       name="greutate"
+                       class="form-control"
+                       placeholder="kg">
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Înălțime</label>
+                <input type="number"
+                       step="0.01"
+                       name="inaltime"
+                       class="form-control"
+                       placeholder="cm">
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Alergii</label>
+                <textarea name="alergii"
+                          class="form-control"
+                          rows="3"
+                          placeholder="Ex: penicilină, polen"></textarea>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Boli cronice</label>
+                <textarea name="boli_cronice"
+                          class="form-control"
+                          rows="3"
+                          placeholder="Ex: diabet, hipertensiune"></textarea>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Antecedente</label>
+                <textarea name="antecedente"
+                          class="form-control"
+                          rows="3"
+                          placeholder="Antecedente medicale relevante"></textarea>
+            </div>
+
+            <div class="col-12">
+                <button type="submit" class="btn btn-success">
+                    Salvează
+                </button>
+
+                <a href="/fise_medicale{% if search %}?search={{ search }}{% endif %}"
+                   class="btn btn-secondary">
+                    Anulează
+                </a>
+            </div>
+
+        </form>
+    </div>
+</div>
+{% endif %}
+
+<div class="card shadow-sm">
+    <div class="card-body">
+
+        <table class="table table-striped table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>ID</th>
+                    <th>Pacient</th>
+                    <th>Grupa sanguină</th>
+                    <th>Alergii</th>
+                    <th>Boli cronice</th>
+                    <th>Antecedente</th>
+                    <th>Greutate</th>
+                    <th>Înălțime</th>
+                    <th class="text-end">Acțiuni</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for f in fise %}
+                <tr>
+
+                    {% if edit_id == f[0] %}
+
+                    <form method="post" action="/actualizeaza_fisa_medicala/{{ f[0] }}">
+
+                        <td>{{ f[0] }}</td>
+
+                        <td>{{ f[1] }} {{ f[2] }}</td>
+
+                        <td>
+                            <input type="text"
+                                   name="grupa_sanguina"
+                                   maxlength="5"
+                                   class="form-control form-control-sm table-edit-input"
+                                   value="{{ f[3] }}">
+                        </td>
+
+                        <td>
+                            <textarea name="alergii"
+                                      class="form-control form-control-sm table-edit-input"
+                                      rows="2">{{ f[4] }}</textarea>
+                        </td>
+
+                        <td>
+                            <textarea name="boli_cronice"
+                                      class="form-control form-control-sm table-edit-input"
+                                      rows="2">{{ f[5] }}</textarea>
+                        </td>
+
+                        <td>
+                            <textarea name="antecedente"
+                                      class="form-control form-control-sm table-edit-input"
+                                      rows="2">{{ f[6] }}</textarea>
+                        </td>
+
+                        <td>
+                            <input type="number"
+                                   step="0.01"
+                                   name="greutate"
+                                   class="form-control form-control-sm table-edit-input"
+                                   value="{{ f[7] }}">
+                        </td>
+
+                        <td>
+                            <input type="number"
+                                   step="0.01"
+                                   name="inaltime"
+                                   class="form-control form-control-sm table-edit-input"
+                                   value="{{ f[8] }}">
+                        </td>
+
+                        <td class="text-end">
+                            <button type="submit"
+                                    class="btn btn-success btn-sm table-edit-btn">
+                                Salvează
+                            </button>
+
+                            <a href="/fise_medicale{% if search %}?search={{ search }}{% endif %}"
+                               class="btn btn-secondary btn-sm table-edit-btn">
+                                Anulează
+                            </a>
+                        </td>
+
+                    </form>
+
+                    {% else %}
+
+                        <td>{{ f[0] }}</td>
+
+                        <td>{{ f[1] }} {{ f[2] }}</td>
+
+                        <td>
+                            <span class="badge bg-info text-dark">
+                                {{ f[3] if f[3] else '-' }}
+                            </span>
+                        </td>
+
+                        <td class="text-limit">
+                            {{ f[4] if f[4] else '-' }}
+                        </td>
+
+                        <td class="text-limit">
+                            {{ f[5] if f[5] else '-' }}
+                        </td>
+
+                        <td class="text-limit">
+                            {{ f[6] if f[6] else '-' }}
+                        </td>
+
+                        <td>
+                            {% if f[7] %}
+                                {{ f[7] }} kg
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if f[8] %}
+                                {{ f[8] }} cm
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+
+                        <td class="text-end">
+                            <a href="/fise_medicale?edit_id={{ f[0] }}{% if search %}&search={{ search }}{% endif %}"
+                               class="btn btn-warning btn-sm">
+                                Modifică
+                            </a>
+
+                            <a href="/sterge_fisa_medicala/{{ f[0] }}"
+                               class="btn btn-danger btn-sm"
+                               onclick="return confirm('Sigur ștergi această fișă medicală?')">
+                                Șterge
+                            </a>
+                        </td>
+
+                    {% endif %}
+
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+{% endblock %}

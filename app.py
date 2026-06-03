@@ -1228,5 +1228,146 @@ def actualizeaza_stoc(id):
     filtru = request.form.get("filtru", "toate")
     return redirect(f"/stoc?show_edit=1&filtru={filtru}")
 
+@app.route("/fise_medicale")
+def fise_medicale():
+    if "user_id" not in session:
+        return redirect("/login")
+
+    if session["rol"] != "admin":
+        return redirect("/")
+
+    reconnect_db()
+
+    search = request.args.get("search")
+    show_add = request.args.get("show_add")
+    edit_id = request.args.get("edit_id")
+
+    if search:
+        value = f"%{search}%"
+        cursor.execute("""
+            SELECT f.id_fisa,
+                   p.nume, p.prenume,
+                   f.grupa_sanguina,
+                   f.alergii,
+                   f.boli_cronice,
+                   f.antecedente,
+                   f.greutate,
+                   f.inaltime
+            FROM fisemedicale f
+            JOIN pacienti p ON f.id_pacient = p.id_pacient
+            WHERE p.nume LIKE %s
+               OR p.prenume LIKE %s
+               OR CONCAT(p.nume, ' ', p.prenume) LIKE %s
+               OR f.grupa_sanguina LIKE %s
+            ORDER BY p.nume, p.prenume
+        """, (value, value, value, value))
+    else:
+        cursor.execute("""
+            SELECT f.id_fisa,
+                   p.nume, p.prenume,
+                   f.grupa_sanguina,
+                   f.alergii,
+                   f.boli_cronice,
+                   f.antecedente,
+                   f.greutate,
+                   f.inaltime
+            FROM fisemedicale f
+            JOIN pacienti p ON f.id_pacient = p.id_pacient
+            ORDER BY p.nume, p.prenume
+        """)
+
+    fise = cursor.fetchall()
+
+    cursor.execute("""
+        SELECT id_pacient, nume, prenume
+        FROM pacienti
+        ORDER BY nume, prenume
+    """)
+    pacienti = cursor.fetchall()
+
+    return render_template(
+        "fise_medicale.html",
+        fise=fise,
+        pacienti=pacienti,
+        search=search,
+        show_add=True if show_add else False,
+        edit_id=int(edit_id) if edit_id else None
+    )
+
+@app.route("/adauga_fisa_medicala", methods=["POST"])
+def adauga_fisa_medicala():
+    if "user_id" not in session:
+        return redirect("/login")
+
+    if session["rol"] != "admin":
+        return redirect("/")
+
+    reconnect_db()
+
+    id_pacient = request.form["id_pacient"]
+    grupa_sanguina = request.form["grupa_sanguina"]
+    alergii = request.form["alergii"]
+    boli_cronice = request.form["boli_cronice"]
+    antecedente = request.form["antecedente"]
+    greutate = request.form["greutate"]
+    inaltime = request.form["inaltime"]
+
+    cursor.execute("""
+        INSERT INTO fisemedicale
+        (id_pacient, grupa_sanguina, alergii, boli_cronice, antecedente, greutate, inaltime)
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
+    """, (id_pacient, grupa_sanguina, alergii, boli_cronice, antecedente, greutate, inaltime))
+
+    conn.commit()
+
+    return redirect("/fise_medicale")
+
+@app.route("/actualizeaza_fisa_medicala/<int:id>", methods=["POST"])
+def actualizeaza_fisa_medicala(id):
+    if "user_id" not in session:
+        return redirect("/login")
+
+    if session["rol"] != "admin":
+        return redirect("/")
+
+    reconnect_db()
+
+    grupa_sanguina = request.form["grupa_sanguina"]
+    alergii = request.form["alergii"]
+    boli_cronice = request.form["boli_cronice"]
+    antecedente = request.form["antecedente"]
+    greutate = request.form["greutate"]
+    inaltime = request.form["inaltime"]
+
+    cursor.execute("""
+        UPDATE fisemedicale
+        SET grupa_sanguina=%s,
+            alergii=%s,
+            boli_cronice=%s,
+            antecedente=%s,
+            greutate=%s,
+            inaltime=%s
+        WHERE id_fisa=%s
+    """, (grupa_sanguina, alergii, boli_cronice, antecedente, greutate, inaltime, id))
+
+    conn.commit()
+
+    return redirect("/fise_medicale")
+
+@app.route("/sterge_fisa_medicala/<int:id>")
+def sterge_fisa_medicala(id):
+    if "user_id" not in session:
+        return redirect("/login")
+
+    if session["rol"] != "admin":
+        return redirect("/")
+
+    reconnect_db()
+
+    cursor.execute("DELETE FROM fisemedicale WHERE id_fisa=%s", (id,))
+    conn.commit()
+
+    return redirect("/fise_medicale")
+
 if __name__ == "__main__":
     app.run(debug=True)
