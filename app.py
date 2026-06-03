@@ -1041,7 +1041,7 @@ def actualizeaza_stoc(id):
     conn.commit()
 
     filtru = request.form.get("filtru", "toate")
-return redirect(f"/stoc?show_edit=1&filtru={filtru}")
+    return redirect(f"/stoc?show_edit=1&filtru={filtru}")
 
 if __name__ == "__main__":
     app.run(debug=True)
