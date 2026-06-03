@@ -473,27 +473,29 @@ def programari():
         value = f"%{search}%"
 
         cursor.execute("""
-            SELECT p.id_programare,
-                   pa.nume,
-                   pa.prenume,
-                   m.nume,
-                   m.prenume,
-                   p.data_programare,
-                   p.ora,
-                   p.status,
-                   c.id_consultatie
-            FROM programari p
-            JOIN pacienti pa ON p.id_pacient = pa.id_pacient
-            JOIN medici m ON p.id_medic = m.id_medic
-            LEFT JOIN consultatii c ON p.id_programare = c.id_programare
-            WHERE pa.nume LIKE %s
-               OR pa.prenume LIKE %s
-               OR m.nume LIKE %s
-               OR m.prenume LIKE %s
-               OR p.status LIKE %s
-               OR p.data_programare LIKE %s
-            ORDER BY p.data_programare DESC
-        """, (value, value, value, value, value, value))
+    SELECT p.id_programare,
+           pa.nume,
+           pa.prenume,
+           m.nume,
+           m.prenume,
+           p.data_programare,
+           p.ora,
+           p.status,
+           c.id_consultatie
+    FROM programari p
+    JOIN pacienti pa ON p.id_pacient = pa.id_pacient
+    JOIN medici m ON p.id_medic = m.id_medic
+    LEFT JOIN consultatii c ON p.id_programare = c.id_programare
+    WHERE pa.nume LIKE %s
+       OR pa.prenume LIKE %s
+       OR CONCAT(pa.nume, ' ', pa.prenume) LIKE %s
+       OR m.nume LIKE %s
+       OR m.prenume LIKE %s
+       OR CONCAT(m.nume, ' ', m.prenume) LIKE %s
+       OR p.status LIKE %s
+       OR p.data_programare LIKE %s
+    ORDER BY p.data_programare DESC
+""", (value, value, value, value, value, value, value, value))
 
     else:
         cursor.execute("""
@@ -717,27 +719,29 @@ def consultatii():
         value = f"%{search}%"
 
         cursor.execute("""
-            SELECT c.id_consultatie,
-                   p.nume, p.prenume,
-                   m.nume, m.prenume,
-                   pr.data_programare,
-                   c.diagnostic,
-                   c.observatii,
-                   r.id_reteta
-            FROM consultatii c
-            JOIN programari pr ON c.id_programare = pr.id_programare
-            JOIN pacienti p ON pr.id_pacient = p.id_pacient
-            JOIN medici m ON pr.id_medic = m.id_medic
-            LEFT JOIN retete r ON c.id_consultatie = r.id_consultatie
-            WHERE p.nume LIKE %s
-               OR p.prenume LIKE %s
-               OR m.nume LIKE %s
-               OR m.prenume LIKE %s
-               OR c.diagnostic LIKE %s
-               OR c.observatii LIKE %s
-               OR pr.data_programare LIKE %s
-            ORDER BY pr.data_programare DESC
-        """, (value, value, value, value, value, value, value))
+    SELECT c.id_consultatie,
+           p.nume, p.prenume,
+           m.nume, m.prenume,
+           pr.data_programare,
+           c.diagnostic,
+           c.observatii,
+           r.id_reteta
+    FROM consultatii c
+    JOIN programari pr ON c.id_programare = pr.id_programare
+    JOIN pacienti p ON pr.id_pacient = p.id_pacient
+    JOIN medici m ON pr.id_medic = m.id_medic
+    LEFT JOIN retete r ON c.id_consultatie = r.id_consultatie
+    WHERE p.nume LIKE %s
+       OR p.prenume LIKE %s
+       OR CONCAT(p.nume, ' ', p.prenume) LIKE %s
+       OR m.nume LIKE %s
+       OR m.prenume LIKE %s
+       OR CONCAT(m.nume, ' ', m.prenume) LIKE %s
+       OR c.diagnostic LIKE %s
+       OR c.observatii LIKE %s
+       OR pr.data_programare LIKE %s
+    ORDER BY pr.data_programare DESC
+""", (value, value, value, value, value, value, value, value, value))
 
     else:
         cursor.execute("""
@@ -880,26 +884,28 @@ def retete():
         value = f"%{search}%"
 
         cursor.execute("""
-            SELECT r.id_reteta,
-                   p.nume, p.prenume,
-                   m.nume, m.prenume,
-                   c.diagnostic,
-                   r.medicamente,
-                   r.data_emitere
-            FROM retete r
-            JOIN consultatii c ON r.id_consultatie = c.id_consultatie
-            JOIN programari pr ON c.id_programare = pr.id_programare
-            JOIN pacienti p ON pr.id_pacient = p.id_pacient
-            JOIN medici m ON pr.id_medic = m.id_medic
-            WHERE p.nume LIKE %s
-               OR p.prenume LIKE %s
-               OR m.nume LIKE %s
-               OR m.prenume LIKE %s
-               OR c.diagnostic LIKE %s
-               OR r.medicamente LIKE %s
-               OR r.data_emitere LIKE %s
-            ORDER BY r.data_emitere DESC
-        """, (value, value, value, value, value, value, value))
+    SELECT r.id_reteta,
+           p.nume, p.prenume,
+           m.nume, m.prenume,
+           c.diagnostic,
+           r.medicamente,
+           r.data_emitere
+    FROM retete r
+    JOIN consultatii c ON r.id_consultatie = c.id_consultatie
+    JOIN programari pr ON c.id_programare = pr.id_programare
+    JOIN pacienti p ON pr.id_pacient = p.id_pacient
+    JOIN medici m ON pr.id_medic = m.id_medic
+    WHERE p.nume LIKE %s
+       OR p.prenume LIKE %s
+       OR CONCAT(p.nume, ' ', p.prenume) LIKE %s
+       OR m.nume LIKE %s
+       OR m.prenume LIKE %s
+       OR CONCAT(m.nume, ' ', m.prenume) LIKE %s
+       OR c.diagnostic LIKE %s
+       OR r.medicamente LIKE %s
+       OR r.data_emitere LIKE %s
+    ORDER BY r.data_emitere DESC
+""", (value, value, value, value, value, value, value, value, value))
 
     else:
         cursor.execute("""
